@@ -20,8 +20,8 @@ export const RegisterForm: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwit
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
       return;
     }
 
@@ -114,7 +114,7 @@ export const RegisterForm: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwit
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
               required
             />

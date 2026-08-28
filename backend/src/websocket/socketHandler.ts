@@ -14,7 +14,16 @@ class SocketHandler {
   init(httpServer: HttpServer) {
     this.io = new Server(httpServer, {
       cors: {
-        origin: config.clientUrl,
+        origin: config.isProduction
+          ? config.clientUrls
+          : (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) => {
+            if (!origin || config.clientUrls.includes(origin.replace(/\/$/, '')) ||
+                /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+              callback(null, true);
+              return;
+            }
+            callback(new Error('CORS origin not allowed'));
+          },
         methods: ['GET', 'POST'],
         credentials: true,
       },

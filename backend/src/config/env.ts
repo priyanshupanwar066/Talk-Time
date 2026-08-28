@@ -14,6 +14,10 @@ const mongodbUri = nodeEnv === 'test'
 const mongodbDb = process.env.MONGODB_DB || 'talktime';
 const jwtSecret = process.env.JWT_SECRET || '';
 const s3Bucket = process.env.S3_BUCKET || '';
+const clientUrls = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((url) => url.trim().replace(/\/$/, ''))
+  .filter(Boolean);
 
 if (nodeEnv === 'production' && (!mongodbUri || !process.env.MONGODB_DB || !jwtSecret || !s3Bucket)) {
   throw new Error('MONGODB_URI, MONGODB_DB, JWT_SECRET, and S3_BUCKET are required in production');
@@ -28,7 +32,8 @@ export const config = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
   uploadDir: process.env.UPLOAD_DIR || 'uploads',
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  clientUrl: clientUrls[0] || 'http://localhost:5173',
+  clientUrls,
   nodeEnv,
   isProduction: nodeEnv === 'production',
   mongodbUri,

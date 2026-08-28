@@ -51,30 +51,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [refreshUser]);
 
   const login = async (identifier: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const res = await api.login({ identifier, password });
-      if (res.success && res.data) {
-        localStorage.setItem('talktime_token', res.data.token);
-        setToken(res.data.token);
-        setCurrentUser(res.data.user);
-      }
-    } finally {
-      setIsLoading(false);
+    const res = await api.login({ identifier, password });
+    if (res.success && res.data) {
+      localStorage.setItem('talktime_token', res.data.token);
+      setToken(res.data.token);
+      setCurrentUser(res.data.user);
     }
   };
 
   const register = async (data: { name: string; username: string; email: string; password: string; bio?: string }) => {
-    setIsLoading(true);
-    try {
-      const res = await api.register(data);
-      if (res.success && res.data) {
-        localStorage.setItem('talktime_token', res.data.token);
-        setToken(res.data.token);
-        setCurrentUser(res.data.user);
-      }
-    } finally {
-      setIsLoading(false);
+    const res = await api.register(data);
+    if (res.success && res.data) {
+      localStorage.setItem('talktime_token', res.data.token);
+      setToken(res.data.token);
+      setCurrentUser(res.data.user);
     }
   };
 

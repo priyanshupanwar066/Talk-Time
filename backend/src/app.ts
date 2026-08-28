@@ -30,7 +30,16 @@ export function createApp(): express.Application {
 
   // Basic middleware
   app.use(cors({
-    origin: config.clientUrl,
+    origin: config.isProduction
+      ? config.clientUrls
+      : (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) => {
+        if (!origin || config.clientUrls.includes(origin.replace(/\/$/, '')) ||
+            /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+          callback(null, true);
+          return;
+        }
+        callback(new Error('CORS origin not allowed'));
+      },
     credentials: true,
   }));
   app.use(express.json({ limit: '30mb' }));
