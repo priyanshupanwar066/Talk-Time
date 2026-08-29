@@ -14,7 +14,7 @@ RUN npm run build
 
 # Stage 2
 
-FROM nginx:22-alpine AS production
+FROM nginx:alpine AS production
 
 RUN rm -rf /usr/share/nginx/html/*
 

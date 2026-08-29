@@ -1,0 +1,70 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: talktime-frontend
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: talktime-backend
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./backend/.env
+
+    environment:
+      NODE_ENV: development
+      HOST: 0.0.0.0
+      PORT: 3000
+      REDIS_URL: redis://redis:6379
+      CLIENT_URL: http://localhost:5173
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    volumes:
+      - uploads:/app/uploads
+
+
+  redis:
+    image: redis:7-alpine
+    container_name: talktime-redis
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis-data:/data
+
+    command: redis-server --appendonly yes
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+    restart: unless-stopped
+
+
+volumes:
+  redis-data:
+  uploads:
