@@ -1,0 +1,16 @@
+frontend:
+  replicaCount: 2
+
+  image:
+    repository: priyanshu066/talktime-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+
+backend:
+  replicaCount: 2
+
+  
