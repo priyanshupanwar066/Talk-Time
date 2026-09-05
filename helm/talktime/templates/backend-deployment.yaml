@@ -22,3 +22,6 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          env:
+            - name: REDIS_URL
+              value: "redis://{{ include "talktime.fullname" . }}-redis:6379"
