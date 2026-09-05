@@ -21,7 +21,8 @@ backend:
   service:
     type: ClusterIP
     port: 3000
-
+  s3:
+    bucket: 
 redis:
   replicaCount: 1
 
