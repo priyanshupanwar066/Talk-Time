@@ -23,6 +23,25 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
           envFrom:
             - configMapRef:
                 name: {{ include "talktime.fullname" . }}-backend-config
