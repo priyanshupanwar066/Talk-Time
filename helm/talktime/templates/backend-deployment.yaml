@@ -26,6 +26,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "talktime.fullname" . }}-backend-config
+            - secretRef:
+                name: talktime-backend-secret
           env:
             - name: REDIS_URL
               value: "redis://{{ include "talktime.fullname" . }}-redis:6379"
