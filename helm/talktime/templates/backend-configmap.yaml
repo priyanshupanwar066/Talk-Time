@@ -7,6 +7,7 @@ data:
   PORT: "3000"
   MONGODB_DB: "talktime"
   S3_REGION: "ap-south-1"
+  S3_BUCKET: "talktime-uploads-993412842733"
   CLIENT_URL: "http://localhost:5173"
   JWT_EXPIRES_IN: "7d"
   UPLOAD_DIR: "uploads"
