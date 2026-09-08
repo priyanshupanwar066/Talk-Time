@@ -45,7 +45,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return;
     }
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
     const socketInstance = io(socketUrl, {
       auth: { token },
       transports: ['websocket', 'polling'],

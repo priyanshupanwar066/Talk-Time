@@ -1,7 +1,9 @@
 // TalkTime Frontend API Client
 import { User, Conversation, ConversationMember, ConversationItem, Message, Notification } from '../types';
 
-export const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
+export const API_ORIGIN = (
+  import.meta.env.VITE_API_URL || window.location.origin
+).replace(/\/$/, '');
 const API_BASE = `${API_ORIGIN}/api`;
 
 export function resolveMediaUrl(url: string | null | undefined): string | null | undefined {
