@@ -3,7 +3,7 @@ frontend:
 
   image:
     repository: priyanshu066/talktime-frontend
-    tag: latest
+    tag: v2
     pullPolicy: IfNotPresent
 
   service:
