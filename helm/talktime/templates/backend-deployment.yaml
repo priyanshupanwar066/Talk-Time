@@ -1,36 +1,43 @@
 apiVersion: apps/v1
+
 kind: Deployment
+
 metadata:
   name: {{ include "talktime.fullname" . }}-backend
   labels:
     app: {{ include "talktime.name" . }}-backend
+
 spec:
   replicas: {{ .Values.backend.replicaCount }}
 
   strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 1
-    maxSurge: 0
-    
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+
   selector:
     matchLabels:
       app: {{ include "talktime.name" . }}-backend
+
   template:
     metadata:
       labels:
         app: {{ include "talktime.name" . }}-backend
+
     spec:
       serviceAccountName: talktime-backend
+
       containers:
         - name: backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+
           ports:
             - name: http
               containerPort: 3000
               protocol: TCP
-          
+
           livenessProbe:
             httpGet:
               path: /api/health
@@ -52,8 +59,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "talktime.fullname" . }}-backend-config
+
             - secretRef:
                 name: talktime-backend-secret
+
           env:
             - name: REDIS_URL
               value: "redis://{{ include "talktime.fullname" . }}-redis:6379"
