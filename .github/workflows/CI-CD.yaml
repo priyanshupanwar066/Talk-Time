@@ -13,15 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      # -----------------------------
+      # Checkout
+      # -----------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # -----------------------------
+      # Docker Hub Login
+      # -----------------------------
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # -----------------------------
+      # Build & Push Backend
+      # -----------------------------
       - name: Build and push Backend
         uses: docker/build-push-action@v6
         with:
@@ -31,6 +41,9 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/talktime-backend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/talktime-backend:${{ github.sha }}
 
+      # -----------------------------
+      # Build & Push Frontend
+      # -----------------------------
       - name: Build and push Frontend
         uses: docker/build-push-action@v6
         with:
@@ -40,45 +53,25 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/talktime-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/talktime-frontend:${{ github.sha }}
 
+      # -----------------------------
+      # Update Helm Image Tags
+      # -----------------------------
       - name: Update Helm image tags
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
+          sed -i '/repository: priyanshu066\/talktime-backend/{n;s/tag:.*/tag: '${GITHUB_SHA}'/;}' helm/talktime/values.yaml
 
-          path = Path("helm/talktime/values.yaml")
-          text = path.read_text()
+          sed -i '/repository: priyanshu066\/talktime-frontend/{n;s/tag:.*/tag: '${GITHUB_SHA}'/;}' helm/talktime/values.yaml
 
-          sha = "${{ github.sha }}"
-
-          # Update frontend tag
-          text = re.sub(
-              r'(frontend:\s+replicaCount:\s+\d+\s+image:\s+repository:\s+[^\n]+\s+tag:\s+)[^\n]+',
-              rf'\g<1>{sha}',
-              text,
-              count=1,
-              flags=re.MULTILINE
-          )
-
-          # Update backend tag
-          text = re.sub(
-              r'(backend:\s+replicaCount:\s+\d+\s+image:\s+repository:\s+[^\n]+\s+tag:\s+)[^\n]+',
-              rf'\g<1>{sha}',
-              text,
-              count=1,
-              flags=re.MULTILINE
-          )
-
-          path.write_text(text)
-          PY
-
+      # -----------------------------
+      # Show Helm Changes
+      # -----------------------------
       - name: Show updated Helm values
         run: |
-          grep -A8 '^frontend:' helm/talktime/values.yaml
-          echo "--------------------"
-          grep -A8 '^backend:' helm/talktime/values.yaml
+          git diff -- helm/talktime/values.yaml
 
-      
+      # -----------------------------
+      # Commit GitOps Change
+      # -----------------------------
       - name: Commit and push Helm update
         run: |
           git config user.name "github-actions[bot]"
@@ -86,6 +79,6 @@ jobs:
 
           git add helm/talktime/values.yaml
 
-          git commit -m "chore: update images to ${{ github.sha }} [skip ci]" || echo "No changes to commit"
+          git commit -m "chore: update images to ${GITHUB_SHA} [skip ci]" || echo "No changes to commit"
 
           git push
