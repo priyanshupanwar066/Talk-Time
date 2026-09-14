@@ -6,6 +6,12 @@ metadata:
     app: {{ include "talktime.name" . }}-frontend
 spec:
   replicas: {{ .Values.frontend.replicaCount }}
+  strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 0
+
   selector:
     matchLabels:
       app: {{ include "talktime.name" . }}-frontend
