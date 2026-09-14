@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -36,3 +39,53 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/talktime-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/talktime-frontend:${{ github.sha }}
+
+      - name: Update Helm image tags
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("helm/talktime/values.yaml")
+          text = path.read_text()
+
+          sha = "${{ github.sha }}"
+
+          # Update frontend tag
+          text = re.sub(
+              r'(frontend:\s+replicaCount:\s+\d+\s+image:\s+repository:\s+[^\n]+\s+tag:\s+)[^\n]+',
+              rf'\g<1>{sha}',
+              text,
+              count=1,
+              flags=re.MULTILINE
+          )
+
+          # Update backend tag
+          text = re.sub(
+              r'(backend:\s+replicaCount:\s+\d+\s+image:\s+repository:\s+[^\n]+\s+tag:\s+)[^\n]+',
+              rf'\g<1>{sha}',
+              text,
+              count=1,
+              flags=re.MULTILINE
+          )
+
+          path.write_text(text)
+          PY
+
+      - name: Show updated Helm values
+        run: |
+          grep -A8 '^frontend:' helm/talktime/values.yaml
+          echo "--------------------"
+          grep -A8 '^backend:' helm/talktime/values.yaml
+
+      
+      - name: Commit and push Helm update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add helm/talktime/values.yaml
+
+          git commit -m "chore: update images to ${{ github.sha }} [skip ci]" || echo "No changes to commit"
+
+          git push
