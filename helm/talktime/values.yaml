@@ -3,7 +3,7 @@ frontend:
 
   image:
     repository: priyanshu066/talktime-frontend
-    tag: d698fb7da97dc5c22bed1a143719689c3eb20d5b
+    tag: 0507ababd83a61eb4d4c310a7bc958929054747f
     pullPolicy: IfNotPresent
 
   service:
@@ -15,7 +15,7 @@ backend:
 
   image:
     repository: priyanshu066/talktime-backend
-    tag: d698fb7da97dc5c22bed1a143719689c3eb20d5b
+    tag: 0507ababd83a61eb4d4c310a7bc958929054747f
     pullPolicy: IfNotPresent
 
   service:
