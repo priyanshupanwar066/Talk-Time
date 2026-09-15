@@ -22,7 +22,7 @@ backend:
     type: ClusterIP
     port: 3000
   s3:
-    bucket: 
+    bucket: "talktime-uploads-993412842733"
 redis:
   replicaCount: 1
 
